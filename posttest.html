@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>แบบทดสอบหลังการอบรม (Post-test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4FAF8;
+    --surface:#FFFFFF;
+    --primary:#C9702E;
+    --primary-dark:#8F4E1A;
+    --accent:#3E8F7A;
+    --text:#172624;
+    --text-muted:#5C726D;
+    --success:#2F8F5B;
+    --danger:#C6543F;
+    --border:#DCEAE6;
+    --track:#E4F0EC;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Sarabun',sans-serif;
+    background:
+      radial-gradient(circle at 12% -6%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 42%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:var(--surface);
+    box-shadow:0 0 40px rgba(15,60,52,0.08);
+    display:flex;
+    flex-direction:column;
+  }
+  header.top{
+    background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color:#fff;
+    padding:22px 20px 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-40px;
+    width:160px;height:160px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.06);
+  }
+  .badge{
+    width:52px;height:52px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.85);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:13px;letter-spacing:0.5px;
+    margin-bottom:12px;
+    background:rgba(255,255,255,0.08);
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    opacity:0.85;
+    font-weight:600;
+  }
+  h1.title{
+    font-size:20px;
+    margin:6px 0 4px;
+    font-weight:800;
+    line-height:1.35;
+  }
+  .subtitle{
+    font-size:13px;
+    opacity:0.9;
+    line-height:1.5;
+    margin:0;
+  }
+  .progress-wrap{
+    padding:14px 20px 0;
+  }
+  .progress-label{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--text-muted);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--track);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius:999px;
+    transition:width .35s ease;
+    width:0%;
+  }
+  main{
+    flex:1;
+    padding:22px 20px 110px;
+  }
+  .screen{display:none;animation:fade .25s ease;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:8px;
+    color:var(--text);
+  }
+  .field input[type=text],
+  .field input[type=number]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1.5px solid var(--border);
+    font-family:inherit;
+    font-size:15px;
+    background:#FBFEFD;
+  }
+  .field input:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:var(--primary);}
+
+  .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .chip{
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:12px 10px;
+    text-align:center;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--text-muted);
+    cursor:pointer;
+    background:#FBFEFD;
+    user-select:none;
+  }
+  .chip.selected{
+    border-color:var(--primary);
+    background:color-mix(in srgb, var(--primary) 10%, white);
+    color:var(--primary-dark);
+  }
+
+  .q-eyebrow{
+    font-size:12px;
+    color:var(--primary-dark);
+    font-weight:700;
+    letter-spacing:0.5px;
+    margin-bottom:6px;
+  }
+  .q-text{
+    font-size:18px;
+    font-weight:700;
+    line-height:1.5;
+    margin:0 0 18px;
+    color:var(--text);
+  }
+  .option{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 14px;
+    border-radius:14px;
+    border:1.5px solid var(--border);
+    margin-bottom:10px;
+    cursor:pointer;
+    background:#FBFEFD;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .option:active{transform:scale(0.995);}
+  .option .letter{
+    width:28px;height:28px;
+    border-radius:50%;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;
+    color:var(--text-muted);
+    flex-shrink:0;
+  }
+  .option .txt{font-size:14.5px;line-height:1.5;}
+  .option.selected{
+    border-color:var(--primary);
+    background:color-mix(in srgb, var(--primary) 8%, white);
+  }
+  .option.selected .letter{
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+  }
+
+  footer.nav{
+    position:sticky;
+    bottom:0;
+    background:linear-gradient(180deg, rgba(255,255,255,0), #fff 22%);
+    padding:16px 20px 22px;
+    display:flex;
+    gap:10px;
+    max-width:480px;
+    width:100%;
+  }
+  button{
+    font-family:inherit;
+    border:none;
+    border-radius:14px;
+    font-weight:700;
+    font-size:15px;
+    cursor:pointer;
+  }
+  .btn-primary{
+    flex:1;
+    padding:15px;
+    background:var(--primary);
+    color:#fff;
+  }
+  .btn-primary:disabled{
+    background:#B9CFC9;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    padding:15px 18px;
+    background:#fff;
+    border:1.5px solid var(--border);
+    color:var(--text-muted);
+  }
+
+  .intro-icon{
+    width:56px;height:56px;
+    border-radius:16px;
+    background:color-mix(in srgb, var(--primary) 12%, white);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;
+    margin-bottom:14px;
+  }
+  .intro-h{font-size:18px;font-weight:800;margin:0 0 8px;}
+  .intro-p{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin:0 0 22px;}
+
+  .result-hero{text-align:center;padding:10px 0 24px;}
+  .score-ring{
+    width:140px;height:140px;
+    border-radius:50%;
+    margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;
+    background:conic-gradient(var(--primary) calc(var(--pct) * 1%), var(--track) 0);
+    position:relative;
+  }
+  .score-ring::before{
+    content:"";
+    position:absolute;
+    width:112px;height:112px;
+    border-radius:50%;
+    background:#fff;
+  }
+  .score-num{position:relative;font-size:30px;font-weight:800;color:var(--primary-dark);}
+  .score-den{position:relative;font-size:13px;color:var(--text-muted);font-weight:600;}
+  .result-msg{font-size:15px;font-weight:700;margin:0 0 6px;}
+  .result-sub{font-size:13.5px;color:var(--text-muted);line-height:1.6;margin:0 auto 22px;max-width:320px;}
+  .status-pill{
+    display:inline-block;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  .status-pill.ok{background:color-mix(in srgb, var(--success) 15%, white);color:var(--success);}
+  .status-pill.review{background:color-mix(in srgb, var(--danger) 12%, white);color:var(--danger);}
+
+  .error-note{
+    font-size:12.5px;
+    color:var(--danger);
+    margin-top:6px;
+    display:none;
+  }
+  .sending-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin-top:8px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="badge">ทน.นธ</div>
+    <div class="eyebrow">เทศบาลเมืองนราธิวาส · ประจำปี 2569</div>
+    <h1 class="title">แบบทดสอบหลังการอบรม (Post-test)</h1>
+    <p class="subtitle">โครงการสร้างเสริมสุขภาพเชิงรุก เพื่อลดภาวะคลอดก่อนกำหนด</p>
+  </header>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none;">
+    <div class="progress-label">
+      <span id="progressText">ข้อที่ 1 จาก 10</span>
+      <span id="progressPct">10%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <main id="main">
+
+    <section class="screen active" data-screen="intro">
+      <div class="intro-icon">📋</div>
+      <h2 class="intro-h">ก่อนเริ่มทำแบบทดสอบ</h2>
+      <p class="intro-p">กรุณากรอกข้อมูลเบื้องต้น ใช้เวลาทำแบบทดสอบทั้งหมดประมาณ 3-5 นาที คำตอบของท่านจะถูกเก็บเป็นความลับและใช้เพื่อประเมินผลโครงการเท่านั้น</p>
+
+      <div class="field">
+        <label for="fname">ชื่อ-นามสกุล</label>
+        <input type="text" id="fname" placeholder="เช่น สมหญิง ใจดี">
+      </div>
+      <div class="field">
+        <label for="fage">อายุ (ปี)</label>
+        <input type="number" id="fage" placeholder="เช่น 28" min="10" max="100">
+      </div>
+      <div class="field">
+        <label>สถานะผู้เข้าร่วมโครงการ</label>
+        <div class="status-grid">
+          <div class="chip" data-status="หญิงตั้งครรภ์">หญิงตั้งครรภ์</div>
+          <div class="chip" data-status="อสม.">อสม.</div>
+          <div class="chip" data-status="ญาติ">ญาติ</div>
+          <div class="chip" data-status="อื่น ๆ">อื่น ๆ</div>
+        </div>
+      </div>
+      <div class="error-note" id="introError">กรุณากรอกชื่อ อายุ และเลือกสถานะให้ครบก่อนเริ่มทำแบบทดสอบ</div>
+    </section>
+
+    
+    <section class="screen" data-screen="q1">
+      <div class="q-eyebrow">คำถามข้อที่ 1</div>
+      <p class="q-text">1. ภาวะคลอดก่อนกำหนด หมายถึงข้อใด</p>
+            <div class="option" data-qindex="0" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">คลอดก่อนอายุครรภ์ 28 สัปดาห์</span>
+      </div>
+      <div class="option" data-qindex="0" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">คลอดก่อนอายุครรภ์ 37 สัปดาห์</span>
+      </div>
+      <div class="option" data-qindex="0" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">คลอดก่อนอายุครรภ์ 40 สัปดาห์</span>
+      </div>
+      <div class="option" data-qindex="0" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">คลอดก่อนอายุครรภ์ 42 สัปดาห์</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q2">
+      <div class="q-eyebrow">คำถามข้อที่ 2</div>
+      <p class="q-text">2. ข้อใดช่วยลดความเสี่ยงการคลอดก่อนกำหนดมากที่สุด</p>
+            <div class="option" data-qindex="1" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">ฝากครรภ์ตั้งแต่ทราบว่าตั้งครรภ์</span>
+      </div>
+      <div class="option" data-qindex="1" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">นอนดึกทุกวัน</span>
+      </div>
+      <div class="option" data-qindex="1" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">ซื้อยารับประทานเอง</span>
+      </div>
+      <div class="option" data-qindex="1" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ไม่จำเป็นต้องพบแพทย์</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q3">
+      <div class="q-eyebrow">คำถามข้อที่ 3</div>
+      <p class="q-text">3. หญิงตั้งครรภ์ควรเริ่มฝากครรภ์เมื่อใด</p>
+            <div class="option" data-qindex="2" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">ก่อนอายุครรภ์ 12 สัปดาห์</span>
+      </div>
+      <div class="option" data-qindex="2" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">อายุครรภ์ 6 เดือน</span>
+      </div>
+      <div class="option" data-qindex="2" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">อายุครรภ์ 8 เดือน</span>
+      </div>
+      <div class="option" data-qindex="2" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ใกล้คลอด</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q4">
+      <div class="q-eyebrow">คำถามข้อที่ 4</div>
+      <p class="q-text">4. ข้อใดเป็นสัญญาณอันตรายที่ควรรีบพบแพทย์</p>
+            <div class="option" data-qindex="3" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">น้ำเดิน</span>
+      </div>
+      <div class="option" data-qindex="3" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">มีเลือดออกทางช่องคลอด</span>
+      </div>
+      <div class="option" data-qindex="3" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">เจ็บครรภ์ก่อน 37 สัปดาห์</span>
+      </div>
+      <div class="option" data-qindex="3" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ถูกทุกข้อ</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q5">
+      <div class="q-eyebrow">คำถามข้อที่ 5</div>
+      <p class="q-text">5. ข้อใดเป็นปัจจัยเสี่ยงต่อการคลอดก่อนกำหนด</p>
+            <div class="option" data-qindex="4" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">สูบบุหรี่</span>
+      </div>
+      <div class="option" data-qindex="4" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">ดื่มแอลกอฮอล์</span>
+      </div>
+      <div class="option" data-qindex="4" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">การติดเชื้อระหว่างตั้งครรภ์</span>
+      </div>
+      <div class="option" data-qindex="4" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ถูกทุกข้อ</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q6">
+      <div class="q-eyebrow">คำถามข้อที่ 6</div>
+      <p class="q-text">6. หญิงตั้งครรภ์ควรรับประทานอาหารอย่างไร</p>
+            <div class="option" data-qindex="5" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">ครบ 5 หมู่</span>
+      </div>
+      <div class="option" data-qindex="5" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">งดผัก</span>
+      </div>
+      <div class="option" data-qindex="5" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">กินเฉพาะผลไม้</span>
+      </div>
+      <div class="option" data-qindex="5" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">กินวันละมื้อ</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q7">
+      <div class="q-eyebrow">คำถามข้อที่ 7</div>
+      <p class="q-text">7. หากลูกดิ้นน้อยลง ควรทำอย่างไร</p>
+            <div class="option" data-qindex="6" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">รอดูอีกหลายวัน</span>
+      </div>
+      <div class="option" data-qindex="6" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">รีบพบแพทย์</span>
+      </div>
+      <div class="option" data-qindex="6" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">ซื้อยารับประทานเอง</span>
+      </div>
+      <div class="option" data-qindex="6" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">นวดท้องแรง ๆ</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q8">
+      <div class="q-eyebrow">คำถามข้อที่ 8</div>
+      <p class="q-text">8. การรับประทานวิตามินและยาควรเป็นอย่างไร</p>
+            <div class="option" data-qindex="7" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">รับประทานตามแพทย์สั่ง</span>
+      </div>
+      <div class="option" data-qindex="7" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">ซื้อรับประทานเอง</span>
+      </div>
+      <div class="option" data-qindex="7" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">หยุดยาเมื่อรู้สึกดีขึ้น</span>
+      </div>
+      <div class="option" data-qindex="7" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">รับประทานตามคำแนะนำเพื่อน</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q9">
+      <div class="q-eyebrow">คำถามข้อที่ 9</div>
+      <p class="q-text">9. การพักผ่อนของหญิงตั้งครรภ์ควรเป็นอย่างไร</p>
+            <div class="option" data-qindex="8" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">พักผ่อนให้เพียงพอ</span>
+      </div>
+      <div class="option" data-qindex="8" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">ทำงานหนักทุกวัน</span>
+      </div>
+      <div class="option" data-qindex="8" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">นอนวันละ 3 ชั่วโมง</span>
+      </div>
+      <div class="option" data-qindex="8" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ออกกำลังกายหนัก</span>
+      </div>
+
+    </section>
+
+    <section class="screen" data-screen="q10">
+      <div class="q-eyebrow">คำถามข้อที่ 10</div>
+      <p class="q-text">10. วัตถุประสงค์สำคัญของการฝากครรภ์ คือข้อใด</p>
+            <div class="option" data-qindex="9" data-cindex="0">
+        <span class="letter">ก</span>
+        <span class="txt">ตรวจสุขภาพแม่และทารก ค้นหาความเสี่ยง</span>
+      </div>
+      <div class="option" data-qindex="9" data-cindex="1">
+        <span class="letter">ข</span>
+        <span class="txt">ทราบเพศลูกเท่านั้น</span>
+      </div>
+      <div class="option" data-qindex="9" data-cindex="2">
+        <span class="letter">ค</span>
+        <span class="txt">รับยาฟรี</span>
+      </div>
+      <div class="option" data-qindex="9" data-cindex="3">
+        <span class="letter">ง</span>
+        <span class="txt">ไม่มีข้อถูก</span>
+      </div>
+
+    </section>
+
+
+    <section class="screen" data-screen="result">
+      <div class="result-hero">
+        <div class="score-ring" id="scoreRing" style="--pct:0;">
+          <span class="score-num" id="scoreNum">0</span>
+        </div>
+        <span class="score-den">จาก 10 ข้อ</span>
+        <div style="margin-top:16px;">
+          <span class="status-pill" id="statusPill">-</span>
+        </div>
+        <p class="result-msg" id="resultMsg">ขอบคุณที่ทำแบบทดสอบ</p>
+        <p class="result-sub" id="resultSub">ระบบได้บันทึกคำตอบของท่านเรียบร้อยแล้ว</p>
+        <p class="sending-note" id="sendingNote"></p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="nav" id="navBar">
+    <button class="btn-ghost" id="btnBack" style="display:none;">ย้อนกลับ</button>
+    <button class="btn-primary" id="btnNext" disabled>เริ่มทำแบบทดสอบ</button>
+  </footer>
+</div>
+
+<script>
+const TEST_TYPE = "posttest";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrw2mgUUCZEvTXIXBf4s-NJMrtc85Af5Fr3jKFlHDk3g36q4B3cGj6Q6vXR8RMeNXR/exec";
+const QUESTIONS = [{"q": "ภาวะคลอดก่อนกำหนด หมายถึงข้อใด", "answer": 1}, {"q": "ข้อใดช่วยลดความเสี่ยงการคลอดก่อนกำหนดมากที่สุด", "answer": 0}, {"q": "หญิงตั้งครรภ์ควรเริ่มฝากครรภ์เมื่อใด", "answer": 0}, {"q": "ข้อใดเป็นสัญญาณอันตรายที่ควรรีบพบแพทย์", "answer": 3}, {"q": "ข้อใดเป็นปัจจัยเสี่ยงต่อการคลอดก่อนกำหนด", "answer": 3}, {"q": "หญิงตั้งครรภ์ควรรับประทานอาหารอย่างไร", "answer": 0}, {"q": "หากลูกดิ้นน้อยลง ควรทำอย่างไร", "answer": 1}, {"q": "การรับประทานวิตามินและยาควรเป็นอย่างไร", "answer": 0}, {"q": "การพักผ่อนของหญิงตั้งครรภ์ควรเป็นอย่างไร", "answer": 0}, {"q": "วัตถุประสงค์สำคัญของการฝากครรภ์ คือข้อใด", "answer": 0}];
+const ANSWERS = new Array(QUESTIONS.length).fill(null);
+
+let screenIndex = 0; // 0 = intro, 1..N = questions, N+1 = result
+const totalScreens = QUESTIONS.length + 2;
+let selectedStatus = null;
+
+const screens = document.querySelectorAll('.screen');
+const btnNext = document.getElementById('btnNext');
+const btnBack = document.getElementById('btnBack');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const progressPct = document.getElementById('progressPct');
+
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+    chip.classList.add('selected');
+    selectedStatus = chip.dataset.status;
+    document.getElementById('introError').style.display='none';
+  });
+});
+
+document.querySelectorAll('.option').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    const qIdx = parseInt(opt.dataset.qindex);
+    const cIdx = parseInt(opt.dataset.cindex);
+    document.querySelectorAll(`.option[data-qindex="${qIdx}"]`).forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    ANSWERS[qIdx] = cIdx;
+    updateNextState();
+  });
+});
+
+function showScreen(idx){
+  screens.forEach(s=>s.classList.remove('active'));
+  screens[idx].classList.add('active');
+  window.scrollTo({top:0, behavior:'instant'});
+
+  const isIntro = idx===0;
+  const isResult = idx===totalScreens-1;
+
+  progressWrap.style.display = (isIntro||isResult) ? 'none':'block';
+  btnBack.style.display = (isIntro||isResult) ? 'none':'inline-block';
+
+  if(!isIntro && !isResult){
+    const qNum = idx; // question number 1-based
+    progressText.textContent = `ข้อที่ ${qNum} จาก ${QUESTIONS.length}`;
+    const pct = Math.round((qNum/QUESTIONS.length)*100);
+    progressFill.style.width = pct+'%';
+    progressPct.textContent = pct+'%';
+  }
+
+  document.getElementById('navBar').style.display = isResult ? 'none':'flex';
+  updateNextState();
+
+  if(isIntro){
+    btnNext.textContent = 'เริ่มทำแบบทดสอบ';
+  } else if(idx===totalScreens-2){
+    btnNext.textContent = 'ส่งคำตอบ';
+  } else {
+    btnNext.textContent = 'ข้อถัดไป';
+  }
+}
+
+function updateNextState(){
+  const idx = screenIndex;
+  if(idx===0){
+    btnNext.disabled = false;
+    return;
+  }
+  if(idx>=1 && idx<=QUESTIONS.length){
+    btnNext.disabled = ANSWERS[idx-1]===null;
+  }
+}
+
+btnNext.addEventListener('click', ()=>{
+  if(screenIndex===0){
+    const name = document.getElementById('fname').value.trim();
+    const age = document.getElementById('fage').value.trim();
+    if(!name || !age || !selectedStatus){
+      document.getElementById('introError').style.display='block';
+      return;
+    }
+  }
+  if(screenIndex>=1 && screenIndex<=QUESTIONS.length && ANSWERS[screenIndex-1]===null){
+    return;
+  }
+  if(screenIndex===QUESTIONS.length){
+    submitResults();
+  }
+  if(screenIndex < totalScreens-1){
+    screenIndex++;
+    showScreen(screenIndex);
+  }
+});
+
+btnBack.addEventListener('click', ()=>{
+  if(screenIndex>0){
+    screenIndex--;
+    showScreen(screenIndex);
+  }
+});
+
+function submitResults(){
+  let score = 0;
+  QUESTIONS.forEach((q,i)=>{ if(ANSWERS[i]===q.answer) score++; });
+
+  const pct100 = Math.round((score/QUESTIONS.length)*100);
+  document.getElementById('scoreRing').style.setProperty('--pct', pct100);
+  document.getElementById('scoreNum').textContent = score;
+
+  const pill = document.getElementById('statusPill');
+  const msg = document.getElementById('resultMsg');
+  const sub = document.getElementById('resultSub');
+
+  if(score>=7){
+    pill.textContent = 'ความเข้าใจอยู่ในเกณฑ์ดี';
+    pill.className = 'status-pill ok';
+    msg.textContent = 'ยินดีด้วย ทำได้ดีมาก';
+    sub.textContent = 'ท่านมีความเข้าใจเรื่องภาวะคลอดก่อนกำหนดในระดับดี ขอบคุณที่ตั้งใจทำแบบทดสอบ';
+  } else {
+    pill.textContent = 'ควรทบทวนเนื้อหาเพิ่มเติม';
+    pill.className = 'status-pill review';
+    msg.textContent = 'ขอบคุณที่ทำแบบทดสอบ';
+    sub.textContent = 'แนะนำให้ทบทวนเนื้อหาการอบรมเพิ่มเติม เพื่อความเข้าใจที่ถูกต้องเกี่ยวกับภาวะคลอดก่อนกำหนด';
+  }
+
+  const sendingNote = document.getElementById('sendingNote');
+  sendingNote.textContent = 'กำลังบันทึกข้อมูล...';
+
+  const payload = {
+    test_type: TEST_TYPE,
+    name: document.getElementById('fname').value.trim(),
+    age: document.getElementById('fage').value.trim(),
+    status: selectedStatus,
+    score: score,
+    answers: ANSWERS.map(a => a===null? '' : ['ก','ข','ค','ง'][a])
+  };
+
+  if(SCRIPT_URL.indexOf('PASTE_YOUR') !== -1){
+    sendingNote.textContent = 'หมายเหตุ: ยังไม่ได้ตั้งค่าปลายทาง Google Sheets (SCRIPT_URL)';
+    return;
+  }
+
+  fetch(SCRIPT_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  }).then(()=>{
+    sendingNote.textContent = 'บันทึกข้อมูลเรียบร้อยแล้ว';
+  }).catch(()=>{
+    sendingNote.textContent = 'ไม่สามารถบันทึกข้อมูลได้ กรุณาแจ้งเจ้าหน้าที่';
+  });
+}
+
+showScreen(0);
+</script>
+</body>
+</html>
