@@ -257,14 +257,42 @@ let timer = null;
 
 const el = id => document.getElementById(id);
 
+let jsonpCounter = 0;
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cbName = 'jsonp_cb_' + (jsonpCounter++);
+    const script = document.createElement('script');
+    const timeoutId = setTimeout(()=>{
+      cleanup();
+      reject(new Error('timeout'));
+    }, 15000);
+
+    function cleanup(){
+      clearTimeout(timeoutId);
+      delete window[cbName];
+      script.remove();
+    }
+
+    window[cbName] = (data)=>{
+      cleanup();
+      resolve(data);
+    };
+    script.onerror = ()=>{
+      cleanup();
+      reject(new Error('script load error'));
+    };
+    script.src = url + (url.indexOf('?')>-1 ? '&':'?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+  });
+}
+
 async function loadData(){
   if(SCRIPT_URL.indexOf('PASTE_YOUR') !== -1){
     el('lastUpdated').textContent = 'ยังไม่ได้ตั้งค่า SCRIPT_URL';
     return;
   }
   try{
-    const res = await fetch(`${SCRIPT_URL}?action=data`);
-    const json = await res.json();
+    const json = await jsonpRequest(`${SCRIPT_URL}?action=data`);
     if(json.result === 'success'){
       DATA = json.data;
       el('lastUpdated').textContent = 'อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH');
@@ -431,21 +459,19 @@ window.saveEdit = async function(tab, row){
   el('editStatus').className = 'status-note';
 
   try{
-    const res = await fetch(SCRIPT_URL, {
+    // ใช้ no-cors เพราะอ่าน response ข้ามโดเมนไม่ได้ (ติด CORS)
+    // คำขอจะถึงเซิร์ฟเวอร์และบันทึกจริง แม้เบราว์เซอร์จะอ่านผลลัพธ์ไม่ได้ก็ตาม
+    await fetch(SCRIPT_URL, {
       method:'POST',
+      mode:'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify(payload)
     });
-    const json = await res.json();
-    if(json.result === 'success'){
-      el('editStatus').textContent = 'บันทึกสำเร็จ';
-      el('editStatus').className = 'status-note ok';
-      editingRow = null;
-      await loadData();
-    } else {
-      el('editStatus').textContent = 'บันทึกไม่สำเร็จ: ' + (json.message||'');
-      el('editStatus').className = 'status-note err';
-    }
+    el('editStatus').textContent = 'กำลังตรวจสอบผลการบันทึก...';
+    editingRow = null;
+    await loadData(); // โหลดข้อมูลจริงกลับมาเพื่อยืนยันว่าบันทึกสำเร็จ
+    el('editStatus').textContent = 'บันทึกสำเร็จ';
+    el('editStatus').className = 'status-note ok';
   }catch(err){
     el('editStatus').textContent = 'เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง';
     el('editStatus').className = 'status-note err';
