@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แดชบอร์ดผลการทดสอบ - โครงการลดภาวะคลอดก่อนกำหนด</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F8F7;
+    --surface:#FFFFFF;
+    --pre:#0F6E63;
+    --pre-dark:#0B4F47;
+    --post:#C9702E;
+    --post-dark:#8F4E1A;
+    --text:#172624;
+    --muted:#5C726D;
+    --border:#E1EAE7;
+    --track:#EDF3F1;
+    --success:#2F8F5B;
+    --danger:#C6543F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Sarabun',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px 60px;}
+
+  header.top{
+    background:linear-gradient(135deg,#0F6E63 0%, #0B4F47 55%, #C9702E 100%);
+    color:#fff;
+    padding:24px 20px 30px;
+    margin-bottom:24px;
+  }
+  header .inner{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;}
+  .badge{
+    width:44px;height:44px;border-radius:50%;
+    border:2px solid rgba(255,255,255,0.85);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:11px;
+    background:rgba(255,255,255,0.08);
+    margin-bottom:10px;
+  }
+  .eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.85;font-weight:600;}
+  h1{font-size:22px;margin:6px 0 4px;font-weight:800;}
+  .sub{font-size:13px;opacity:0.9;margin:0;}
+  .refresh-box{display:flex;align-items:center;gap:10px;font-size:12.5px;opacity:0.95;}
+  .refresh-box button{
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.5);
+    color:#fff;padding:9px 16px;border-radius:10px;
+    font-family:inherit;font-weight:700;cursor:pointer;font-size:13px;
+  }
+  .refresh-box button:hover{background:rgba(255,255,255,0.25);}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:28px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px 18px;
+  }
+  .card .lbl{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:8px;}
+  .card .val{font-size:28px;font-weight:800;line-height:1;}
+  .card .sub2{font-size:12px;color:var(--muted);margin-top:6px;}
+  .card.pre .val{color:var(--pre);}
+  .card.post .val{color:var(--post);}
+  .card.delta .val{color:var(--success);}
+  .card.delta.negative .val{color:var(--danger);}
+
+  section{margin-bottom:30px;}
+  h2.sec-title{font-size:16px;font-weight:800;margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+  .legend{display:flex;gap:16px;font-size:12.5px;color:var(--muted);margin-bottom:12px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .dot.pre{background:var(--pre);}
+  .dot.post{background:var(--post);}
+
+  .qrow{margin-bottom:14px;}
+  .qrow .qtext{font-size:13.5px;font-weight:600;margin-bottom:6px;}
+  .barline{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .barline .tag{font-size:11px;color:var(--muted);width:60px;flex-shrink:0;}
+  .bartrack{flex:1;height:10px;background:var(--track);border-radius:999px;overflow:hidden;}
+  .barfill{height:100%;border-radius:999px;transition:width .4s ease;}
+  .barfill.pre{background:var(--pre);}
+  .barfill.post{background:var(--post);}
+  .barpct{font-size:11.5px;color:var(--muted);width:38px;text-align:right;flex-shrink:0;}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;}
+
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab-btn{
+    padding:10px 18px;border-radius:10px;border:1.5px solid var(--border);
+    background:#fff;font-family:inherit;font-weight:700;font-size:13.5px;
+    cursor:pointer;color:var(--muted);
+  }
+  .tab-btn.active.pre{background:var(--pre);border-color:var(--pre);color:#fff;}
+  .tab-btn.active.post{background:var(--post);border-color:var(--post);color:#fff;}
+
+  .table-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;}
+  .count-txt{font-size:12.5px;color:var(--muted);}
+  .dl-btn{
+    padding:9px 16px;border-radius:10px;border:1.5px solid var(--border);
+    background:#fff;font-family:inherit;font-weight:700;font-size:12.5px;
+    cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:6px;
+  }
+  .dl-btn:hover{border-color:var(--pre);}
+
+  .table-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+  thead th{
+    text-align:left;font-size:11.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:0.4px;
+    padding:8px 10px;border-bottom:1.5px solid var(--border);
+    white-space:nowrap;
+  }
+  tbody td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr:hover{background:#FAFDFC;}
+  .score-pill{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-weight:700;font-size:12px;
+  }
+  .score-pill.good{background:color-mix(in srgb, var(--success) 15%, white);color:var(--success);}
+  .score-pill.low{background:color-mix(in srgb, var(--danger) 12%, white);color:var(--danger);}
+  .row-actions{display:flex;gap:6px;}
+  .icon-btn{
+    border:1.5px solid var(--border);background:#fff;border-radius:8px;
+    padding:6px 10px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;color:var(--muted);
+  }
+  .icon-btn.save{background:var(--pre);border-color:var(--pre);color:#fff;}
+  .icon-btn.cancel{color:var(--danger);border-color:var(--danger);}
+  td input, td select{
+    width:100%;padding:6px 8px;border-radius:7px;border:1.5px solid var(--border);
+    font-family:inherit;font-size:12.5px;background:#FBFEFD;
+  }
+  .empty-note{padding:30px;text-align:center;color:var(--muted);font-size:13.5px;}
+  .status-note{font-size:12px;margin-top:10px;color:var(--muted);}
+  .status-note.err{color:var(--danger);}
+  .status-note.ok{color:var(--success);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <div>
+      <div class="badge">ทน.นธ</div>
+      <div class="eyebrow">เทศบาลเมืองนราธิวาส · ประจำปี 2569</div>
+      <h1>แดชบอร์ดผลการทดสอบ Pre-test / Post-test</h1>
+      <p class="sub">โครงการสร้างเสริมสุขภาพเชิงรุก เพื่อลดภาวะคลอดก่อนกำหนด</p>
+    </div>
+    <div class="refresh-box">
+      <span id="lastUpdated">ยังไม่ได้โหลดข้อมูล</span>
+      <button id="btnRefresh" type="button">รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="cards">
+    <div class="card pre">
+      <div class="lbl">จำนวนผู้ทำ Pre-test</div>
+      <div class="val" id="preCount">-</div>
+    </div>
+    <div class="card pre">
+      <div class="lbl">คะแนนเฉลี่ย Pre-test</div>
+      <div class="val" id="preAvg">-</div>
+      <div class="sub2">จากคะแนนเต็ม 10</div>
+    </div>
+    <div class="card post">
+      <div class="lbl">จำนวนผู้ทำ Post-test</div>
+      <div class="val" id="postCount">-</div>
+    </div>
+    <div class="card post">
+      <div class="lbl">คะแนนเฉลี่ย Post-test</div>
+      <div class="val" id="postAvg">-</div>
+      <div class="sub2">จากคะแนนเต็ม 10</div>
+    </div>
+    <div class="card delta" id="deltaCard">
+      <div class="lbl">คะแนนเฉลี่ยที่เปลี่ยนแปลง</div>
+      <div class="val" id="deltaVal">-</div>
+      <div class="sub2">Post-test เทียบกับ Pre-test</div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title">สัดส่วนตอบถูกรายข้อ</h2>
+    <div class="legend">
+      <span><span class="dot pre"></span> Pre-test</span>
+      <span><span class="dot post"></span> Post-test</span>
+    </div>
+    <div class="panel" id="qBreakdown"></div>
+  </section>
+
+  <section>
+    <h2 class="sec-title">รายชื่อผู้เข้าร่วม</h2>
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab-btn active pre" data-tab="pretest" id="tabPre">Pre-test</button>
+        <button class="tab-btn post" data-tab="posttest" id="tabPost">Post-test</button>
+      </div>
+      <div class="table-toolbar">
+        <span class="count-txt" id="tableCount">0 รายการ</span>
+        <button class="dl-btn" id="btnDownload">⬇ ดาวน์โหลดข้อมูล (CSV)</button>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>เวลาที่ส่ง</th>
+              <th>ชื่อ-นามสกุล</th>
+              <th>อายุ</th>
+              <th>สถานะ</th>
+              <th>คะแนน</th>
+              <th style="width:110px;">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="status-note" id="editStatus"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzrw2mgUUCZEvTXIXBf4s-NJMrtc85Af5Fr3jKFlHDk3g36q4B3cGj6Q6vXR8RMeNXR/exec";
+const REFRESH_MS = 25000;
+
+// เฉลยข้อ 1-10 ใช้คำนวณ % ตอบถูกรายข้อ (ก/ข/ค/ง)
+const ANSWER_KEY = ['ข','ก','ก','ง','ง','ก','ข','ก','ก','ก'];
+const Q_LABELS = [
+  'ภาวะคลอดก่อนกำหนดหมายถึงข้อใด',
+  'ข้อใดช่วยลดความเสี่ยงมากที่สุด',
+  'ควรเริ่มฝากครรภ์เมื่อใด',
+  'สัญญาณอันตรายที่ควรรีบพบแพทย์',
+  'ปัจจัยเสี่ยงต่อการคลอดก่อนกำหนด',
+  'การรับประทานอาหารที่เหมาะสม',
+  'เมื่อลูกดิ้นน้อยลงควรทำอย่างไร',
+  'การรับประทานวิตามินและยา',
+  'การพักผ่อนของหญิงตั้งครรภ์',
+  'วัตถุประสงค์สำคัญของการฝากครรภ์'
+];
+const STATUS_OPTIONS = ['หญิงตั้งครรภ์','อสม.','ญาติ','อื่น ๆ'];
+
+let DATA = { pretest: [], posttest: [] };
+let activeTab = 'pretest';
+let editingRow = null;
+let timer = null;
+
+const el = id => document.getElementById(id);
+
+async function loadData(){
+  if(SCRIPT_URL.indexOf('PASTE_YOUR') !== -1){
+    el('lastUpdated').textContent = 'ยังไม่ได้ตั้งค่า SCRIPT_URL';
+    return;
+  }
+  try{
+    const res = await fetch(`${SCRIPT_URL}?action=data`);
+    const json = await res.json();
+    if(json.result === 'success'){
+      DATA = json.data;
+      el('lastUpdated').textContent = 'อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH');
+      renderAll();
+    } else {
+      el('lastUpdated').textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + (json.message||'');
+    }
+  }catch(err){
+    el('lastUpdated').textContent = 'เชื่อมต่อไม่สำเร็จ ลองรีเฟรชอีกครั้ง';
+  }
+}
+
+function stats(list){
+  const count = list.length;
+  const avg = count ? (list.reduce((s,r)=>s+Number(r.score||0),0)/count) : 0;
+  return { count, avg };
+}
+
+function renderAll(){
+  const preStats = stats(DATA.pretest);
+  const postStats = stats(DATA.posttest);
+
+  el('preCount').textContent = preStats.count;
+  el('preAvg').textContent = preStats.avg.toFixed(1);
+  el('postCount').textContent = postStats.count;
+  el('postAvg').textContent = postStats.avg.toFixed(1);
+
+  const delta = postStats.avg - preStats.avg;
+  const deltaCard = el('deltaCard');
+  deltaCard.classList.toggle('negative', delta < 0);
+  el('deltaVal').textContent = (delta>=0?'+':'') + delta.toFixed(1);
+
+  renderQuestionBreakdown();
+  renderTable();
+}
+
+function pctCorrect(list, qIdx){
+  if(!list.length) return 0;
+  const correct = list.filter(r => (r.answers[qIdx]||'').trim() === ANSWER_KEY[qIdx]).length;
+  return Math.round((correct/list.length)*100);
+}
+
+function renderQuestionBreakdown(){
+  const box = el('qBreakdown');
+  box.innerHTML = '';
+  for(let i=0;i<10;i++){
+    const prePct = pctCorrect(DATA.pretest, i);
+    const postPct = pctCorrect(DATA.posttest, i);
+    const row = document.createElement('div');
+    row.className = 'qrow';
+    row.innerHTML = `
+      <div class="qtext">ข้อ ${i+1}. ${Q_LABELS[i]}</div>
+      <div class="barline">
+        <span class="tag">Pre-test</span>
+        <div class="bartrack"><div class="barfill pre" style="width:${prePct}%"></div></div>
+        <span class="barpct">${prePct}%</span>
+      </div>
+      <div class="barline">
+        <span class="tag">Post-test</span>
+        <div class="bartrack"><div class="barfill post" style="width:${postPct}%"></div></div>
+        <span class="barpct">${postPct}%</span>
+      </div>
+    `;
+    box.appendChild(row);
+  }
+}
+
+function fmtTime(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString('th-TH', {dateStyle:'short', timeStyle:'short'});
+  }catch(e){ return iso; }
+}
+
+function renderTable(){
+  const list = DATA[activeTab] || [];
+  el('tableCount').textContent = list.length + ' รายการ';
+  const tbody = el('tableBody');
+  tbody.innerHTML = '';
+
+  if(!list.length){
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-note">ยังไม่มีข้อมูล</td></tr>`;
+    return;
+  }
+
+  list.slice().reverse().forEach(item=>{
+    const rowKey = activeTab + '-' + item.row;
+    const tr = document.createElement('tr');
+
+    if(editingRow === rowKey){
+      const statusOpts = STATUS_OPTIONS.map(s=>
+        `<option value="${s}" ${s===item.status?'selected':''}>${s}</option>`
+      ).join('');
+      tr.innerHTML = `
+        <td>${fmtTime(item.timestamp)}</td>
+        <td><input type="text" id="edit-name" value="${escapeHtml(item.name)}"></td>
+        <td><input type="number" id="edit-age" value="${escapeHtml(item.age)}" style="width:64px;"></td>
+        <td><select id="edit-status">${statusOpts}</select></td>
+        <td><input type="number" id="edit-score" min="0" max="10" value="${item.score}" style="width:56px;"></td>
+        <td class="row-actions">
+          <button class="icon-btn save" onclick="saveEdit('${activeTab}', ${item.row})">บันทึก</button>
+          <button class="icon-btn cancel" onclick="cancelEdit()">ยกเลิก</button>
+        </td>
+      `;
+    } else {
+      const scoreClass = Number(item.score) >= 7 ? 'good':'low';
+      tr.innerHTML = `
+        <td>${fmtTime(item.timestamp)}</td>
+        <td>${escapeHtml(item.name)}</td>
+        <td>${escapeHtml(item.age)}</td>
+        <td>${escapeHtml(item.status)}</td>
+        <td><span class="score-pill ${scoreClass}">${item.score}/10</span></td>
+        <td class="row-actions">
+          <button class="icon-btn" onclick="startEdit('${activeTab}', ${item.row})">แก้ไข</button>
+        </td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+window.startEdit = function(tab, row){
+  editingRow = tab + '-' + row;
+  el('editStatus').textContent = '';
+  renderTable();
+};
+
+window.cancelEdit = function(){
+  editingRow = null;
+  el('editStatus').textContent = '';
+  renderTable();
+};
+
+window.saveEdit = async function(tab, row){
+  const item = DATA[tab].find(r => r.row === row);
+  if(!item) return;
+
+  const name = el('edit-name').value.trim();
+  const age = el('edit-age').value.trim();
+  const status = el('edit-status').value;
+  const score = el('edit-score').value;
+
+  if(!name){
+    el('editStatus').textContent = 'กรุณากรอกชื่อ-นามสกุล';
+    el('editStatus').className = 'status-note err';
+    return;
+  }
+
+  const payload = {
+    action: 'update',
+    test_type: tab,
+    row: row,
+    name, age, status, score,
+    answers: item.answers // แก้ไขเฉพาะข้อมูลทั่วไป ไม่แก้คำตอบรายข้อในตารางนี้
+  };
+
+  el('editStatus').textContent = 'กำลังบันทึก...';
+  el('editStatus').className = 'status-note';
+
+  try{
+    const res = await fetch(SCRIPT_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    if(json.result === 'success'){
+      el('editStatus').textContent = 'บันทึกสำเร็จ';
+      el('editStatus').className = 'status-note ok';
+      editingRow = null;
+      await loadData();
+    } else {
+      el('editStatus').textContent = 'บันทึกไม่สำเร็จ: ' + (json.message||'');
+      el('editStatus').className = 'status-note err';
+    }
+  }catch(err){
+    el('editStatus').textContent = 'เชื่อมต่อไม่สำเร็จ ลองใหม่อีกครั้ง';
+    el('editStatus').className = 'status-note err';
+  }
+};
+
+function downloadCSV(){
+  const list = DATA[activeTab] || [];
+  const header = ['เวลาที่ส่ง','ชื่อ-นามสกุล','อายุ','สถานะ','คะแนนรวม',
+    'ข้อ1','ข้อ2','ข้อ3','ข้อ4','ข้อ5','ข้อ6','ข้อ7','ข้อ8','ข้อ9','ข้อ10'];
+  const rows = list.map(item => [
+    fmtTime(item.timestamp), item.name, item.age, item.status, item.score,
+    ...item.answers
+  ]);
+  const csvLines = [header, ...rows].map(r =>
+    r.map(v => `"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')
+  ).join('\r\n');
+  const blob = new Blob(['\uFEFF' + csvLines], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (activeTab==='pretest' ? 'pretest_results' : 'posttest_results') + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+el('tabPre').addEventListener('click', ()=>{
+  activeTab='pretest'; editingRow=null;
+  el('tabPre').classList.add('active'); el('tabPost').classList.remove('active');
+  renderTable();
+});
+el('tabPost').addEventListener('click', ()=>{
+  activeTab='posttest'; editingRow=null;
+  el('tabPost').classList.add('active'); el('tabPre').classList.remove('active');
+  renderTable();
+});
+el('btnDownload').addEventListener('click', downloadCSV);
+el('btnRefresh').addEventListener('click', loadData);
+
+loadData();
+timer = setInterval(()=>{ if(editingRow===null) loadData(); }, REFRESH_MS);
+</script>
+</body>
+</html>
